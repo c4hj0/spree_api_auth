@@ -1,22 +1,23 @@
 # encoding: UTF-8
 Gem::Specification.new do |s|
+  # tracking the same version as spree master
+  version = File.read(File.expand_path("../VERSION", __FILE__)).strip
   s.platform    = Gem::Platform::RUBY
   s.name        = 'spree_api_auth'
-  s.version     = '2.4.5'
-  s.summary     = 'TODO: Add gem summary here'
-  s.description = 'TODO: Add (optional) gem description here'
+  s.version     = version
+  s.summary     = 'Provides login/logout behavior for spree api'
+  s.description = 'Provides an api specific sessions controller to support logging in from the api.'
   s.required_ruby_version = '>= 1.9.3'
 
-  # s.author    = 'You'
-  # s.email     = 'you@example.com'
-  # s.homepage  = 'http://www.spreecommerce.com'
+  s.author    = 'John Morales'
+  s.email     = 'jmorales@gmail.com'
 
   #s.files       = `git ls-files`.split("\n")
   #s.test_files  = `git ls-files -- {test,spec,features}/*`.split("\n")
   s.require_path = 'lib'
   s.requirements << 'none'
 
-  s.add_dependency 'spree_core', '~> 2.4.5'
+  s.add_dependency 'spree_core', '~> 3.1.0.beta'
 
   s.add_development_dependency 'capybara', '~> 2.4'
   s.add_development_dependency 'coffee-rails'
