@@ -12,19 +12,13 @@ module Spree
       # }
       # TODO. create/load session ?
       def create
-        if user
-          @order = current_order
-          @user = user
-          respond_with(user, :status => 200, :default_template => :show)
-        end
-
         user = Spree::User.find_for_database_authentication(:login => params[:session][:email])
         if user && user.valid_password?(params[:session][:password])
-          @order = current_order(true)
+          @order = current_order(:create_order_if_necessary => true)
           @user = user
           respond_with(user, :status => 200, :default_template => :show)
         else
-          render "spree/api/errors/not_found", :status => 404 and return
+          render "spree/api/errors/login_error", status: 401 and return
         end
       end
 
@@ -35,7 +29,8 @@ module Spree
           @user = user
           respond_with(user, :status => 200, :default_template => :show)
         else
-          render "spree/api/errors/not_found", :status => 404 and return
+          binding.pry
+          invalid_resource!(@user)
         end
       end
 
@@ -57,6 +52,10 @@ module Spree
         build_resource
         resource = Spree::User.find_for_database_authentication(:login=>params[:login])
         return invalid_login_attempt unless resource
+      end
+
+      def session_params
+        params.require(:session).permit([:email, :password])
       end
     end
   end
