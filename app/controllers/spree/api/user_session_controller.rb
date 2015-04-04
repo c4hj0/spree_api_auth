@@ -14,7 +14,7 @@ module Spree
       def create
         user = Spree::User.find_for_database_authentication(:login => params[:session][:email])
         if user && user.valid_password?(params[:session][:password])
-          @order = current_order(:create_order_if_necessary => true)
+          @order = current_order(:create_order_if_necessary => false)
           @user = user
           respond_with(user, :status => 200, :default_template => :show)
         else
