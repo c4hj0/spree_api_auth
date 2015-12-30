@@ -3,7 +3,7 @@ module Spree
     class UserSessionController < Spree::Api::BaseController
       include Spree::Core::ControllerHelpers::Auth
       include Spree::Core::ControllerHelpers::Order
-      
+      before_action :authenticate_user, except: [:sign_up, :sign_in]
       # expects json:
       # { session: {
       #      "email": "",
@@ -11,6 +11,27 @@ module Spree
       #   }
       # }
       # TODO. create/load session ?
+      def sign_up
+        @user = Spree::User.new(params[:user])
+        if !@user.save
+          unauthorized 
+          return 
+        end
+        @user.generate_spree_api_key!
+      end
+
+      def sign_in
+        user = Spree::User.find_for_database_authentication(:login => params[:session][:email])
+        if user && user.valid_password?(params[:session][:password])
+          @order = current_order(:create_order_if_necessary => false)
+          @user = user
+          @user.generate_spree_api_key! if @user.spree_api_key.blank?
+          respond_with(user, :status => 200, :default_template => :show)
+        else
+          render "spree/api/errors/login_error", status: 401 and return
+        end
+      end
+
       def create
         user = Spree::User.find_for_database_authentication(:login => params[:session][:email])
         if user && user.valid_password?(params[:session][:password])
